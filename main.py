@@ -5,7 +5,7 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import cv2
 import pandas as pd
-import io
+import numpy as np
 
 # Set Streamlit page layout to wide mode for better display
 st.set_page_config(layout="wide")
@@ -57,16 +57,27 @@ def main():
     col1, col2 = st.columns([3, 5])
 
     with col1:
-        # Set up the webcam stream for real-time video feed
-        webrtc_ctx = webrtc_streamer(
-            key="example",
-            rtc_configuration={  # Add this config
-            "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-            },
-            video_transformer_factory=VideoTransformer
-        )
+        # Set up the camera input widget to capture a single image
+        img_file_buffer = st.camera_input("Scan")
 
-         # Add download button for the Excel file
+        if img_file_buffer is not None:
+            # Read image file buffer with OpenCV
+            bytes_data = img_file_buffer.getvalue()
+            frame = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+
+            # Process the image immediately
+            with st.spinner("Processing..."):
+                try:
+                    st.session_state.image, st.session_state.regions, st.session_state.box = process_fields(
+                        frame, form_regions, st.session_state.ocr
+                    )
+                except:
+                    st.session_state.image = None
+                    st.session_state.regions = None
+                    st.session_state.box = None
+                    st.error("Nothing Scanned")
+                        
+        # Add download button for the Excel file
         if not st.session_state.data.empty:
             # Convert the DataFrame to a CSV string
             csv = st.session_state.data.to_csv(index=False)
@@ -79,29 +90,7 @@ def main():
                 mime="text/csv"
             )
 
-    with col2:
-        # Create sub-columns for the "Scan" button and the spinner/loading indicator
-        col3, col4 = st.columns([1, 3])
-
-        with col3:
-            # Add a button to trigger the scan action
-            scan_button_clicked = st.button("Scan")
-
-        with col4:
-            if scan_button_clicked:
-                # Display a spinner while processing the frame
-                with st.spinner("Processing..."):
-                    if webrtc_ctx.state.playing and webrtc_ctx.video_transformer.current_frame is not None:
-                        # Retrieve the current frame from the video feed
-                        frame = webrtc_ctx.video_transformer.current_frame
-                        # Process the frame using the pre-loaded OCR model and form regions
-                        try:
-                            st.session_state.image, st.session_state.regions ,st.session_state.box= process_fields(st.session_state.image2, form_regions, st.session_state.ocr)
-                        except:
-                            st.session_state.image=None 
-                            st.session_state.regions=None 
-                            st.session_state.box=None
-                        
+    with col2:                    
         # Display the processed image if available, or show a placeholder message
         if st.session_state.image is not None:
             col5,col6=st.columns([3,1])
