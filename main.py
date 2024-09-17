@@ -60,6 +60,9 @@ def main():
         # Set up the webcam stream for real-time video feed
         webrtc_ctx = webrtc_streamer(
             key="example",
+            rtc_configuration={  # Add this config
+            "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+            },
             video_transformer_factory=VideoTransformer
         )
 
