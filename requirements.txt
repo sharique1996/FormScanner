@@ -74,6 +74,7 @@ rich==13.8.1
 rpds-py==0.20.0
 scikit-image==0.24.0
 scipy==1.14.1
+setuptools
 shapely==2.0.6
 six==1.16.0
 smmap==5.0.1
