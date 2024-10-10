@@ -31,22 +31,6 @@ if "image2" not in st.session_state:
 if "data" not in st.session_state:
     st.session_state.data = pd.DataFrame()
 
-class VideoTransformer(VideoTransformerBase):
-    """
-    Transforms video frames from the webcam stream for processing.
-    """
-    def __init__(self):
-        self.current_frame = None
-
-    def recv(self, frame):
-        """
-        Receives a video frame, converts it to a format suitable for OpenCV,
-        and stores it in the instance.
-        """
-        img = frame.to_ndarray(format="bgr24")
-        self.current_frame = img
-        return frame
-
 def main():
     """
     Main function to run the Streamlit application.
