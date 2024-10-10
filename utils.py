@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import pickle
+from PIL import Image
 from constants import CANNY_TH1,CANNY_TH2,IMAGE_HEIGHT,IMAGE_WIDTH,FORM_PATH
 
 ##########################################################
