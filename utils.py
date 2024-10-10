@@ -7,6 +7,13 @@ from constants import CANNY_TH1,CANNY_TH2,IMAGE_HEIGHT,IMAGE_WIDTH,FORM_PATH
 ### RAW IMAGE PROCESSIG RELATED FUNCTIONS
 ##########################################################
 
+def load_image(file):
+    """
+    Load an uploaded image file and return it as a numpy array.
+    """
+    img = Image.open(file)
+    return np.array(img)
+
 def preprocess_image(image):
     """
     Convert image to grayscale and apply Gaussian blur.
